@@ -5,37 +5,50 @@ using Unity.VisualScripting;
 public class PlayerController : MonoBehaviour
 {
     [SerializeField] 
-    private InputAction playerController;
-    [SerializeField]
-    private InputAction Attack;
+    private PlayerControles playerController;
+
+    private PlayerManager playerManager;
 
     [SerializeField]
     private float moveSpeed = 5.0f;
+
+    private InputAction move;
+    private InputAction attack;
 
     private Rigidbody2D rb;
     private Animator animator;
 
     Vector2 moveDirection = Vector2.zero;
+    private void Awake()
+    {
+        playerController = new PlayerControles();
+        playerManager = GetComponent<PlayerManager>();
+        rb = GetComponent<Rigidbody2D>();
+        animator = GetComponentInChildren<Animator>();
+    }
+
 
     private void OnEnable()
     {
-        playerController.Enable();
+        move = playerController.Player.Move;
+        move.Enable();
+
+        attack = playerController.Player.Fire;
+        attack.Enable();
+        attack.performed += Attack;
     }
 
     private void OnDisable()
     {
-        playerController.Disable();
+        move.Disable();
+        attack.Disable();
     }
 
-    private void Awake()
-    {
-        rb = GetComponent<Rigidbody2D>();
-        animator = GetComponentInChildren<Animator>();
-    }
+   
     
     private void Update()
     {
-        moveDirection = playerController.ReadValue<Vector2>();
+        moveDirection = move.ReadValue<Vector2>();
         if (moveDirection.x > 0.1f)
         {
             animator.SetBool("IsRunning", true);
@@ -57,6 +70,12 @@ public class PlayerController : MonoBehaviour
     {
         
         rb.velocity = new Vector2(moveDirection.x * moveSpeed, rb.velocity.y);
+    }
+
+    private void Attack(InputAction.CallbackContext context)
+    {
+        animator.SetTrigger("Punch");
+        playerManager.performAttack();
     }
 
 }
