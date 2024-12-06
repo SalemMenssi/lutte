@@ -4,8 +4,18 @@ using Unity.VisualScripting;
 
 public class PlayerController : MonoBehaviour
 {
-    [SerializeField] 
+    [SerializeField]
     private PlayerControles playerController;
+
+    [SerializeField]
+    private Transform AttackPoint;
+
+    [SerializeField]
+    private float attackRangeX = 2f;
+    [SerializeField]
+    private float attackRangeY = 0.7f;
+
+    public LayerMask enemyLayer ;
 
     private PlayerManager playerManager;
 
@@ -44,8 +54,8 @@ public class PlayerController : MonoBehaviour
         attack.Disable();
     }
 
-   
-    
+
+
     private void Update()
     {
         moveDirection = move.ReadValue<Vector2>();
@@ -63,19 +73,50 @@ public class PlayerController : MonoBehaviour
         {
             animator.SetBool("IsRunning", false);
         }
-        
+
     }
 
     private void FixedUpdate()
     {
-        
+
         rb.velocity = new Vector2(moveDirection.x * moveSpeed, rb.velocity.y);
     }
 
     private void Attack(InputAction.CallbackContext context)
     {
         animator.SetTrigger("Punch");
-        playerManager.performAttack();
+
+        
+
+        Collider2D hitEnemy = Physics2D.OverlapBox(AttackPoint.position, new Vector2(attackRangeX, attackRangeY),  enemyLayer);
+        
+        if (hitEnemy != null)
+        {
+            Debug.Log(hitEnemy.name);
+            GameObject Target = GameObject.Find(hitEnemy.name);
+            Enemy enemy = Target.GetComponent<Enemy>();
+            
+            if (enemy != null)
+            {
+                enemy.TakeDamage(playerManager.player.Strength);
+                Debug.Log("We hit " + enemy.name + ". Remaining health: " + enemy.Health);
+            }
+            else
+            {
+                Debug.LogWarning("Hit object does not have an Enemy component.");
+            }
+        }
+        else
+        {
+            Debug.Log("No enemy hit.");
+        }
     }
+    private void OnDrawGizmosSelected()
+    {
+        
+        Gizmos.color = Color.red;  
+        Gizmos.DrawWireCube(AttackPoint.position, new Vector2(attackRangeX, attackRangeY)); 
+    }
+
 
 }
