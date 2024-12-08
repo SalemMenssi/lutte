@@ -23,7 +23,8 @@ public class PlayerController : MonoBehaviour
     private float moveSpeed = 5.0f;
 
     private InputAction move;
-    private InputAction attack;
+    private InputAction punch;
+    private InputAction kick;
 
     private Rigidbody2D rb;
     private Animator animator;
@@ -43,15 +44,21 @@ public class PlayerController : MonoBehaviour
         move = playerController.Player.Move;
         move.Enable();
 
-        attack = playerController.Player.Fire;
-        attack.Enable();
-        attack.performed += Attack;
+        punch = playerController.Player.Punch;
+        punch.Enable();
+        punch.performed += Punch;
+
+        kick = playerController.Player.Kick;
+        kick.Enable();
+        kick.performed += Kick;
+
     }
 
     private void OnDisable()
     {
         move.Disable();
-        attack.Disable();
+        punch.Disable();
+        kick.Disable();
     }
 
 
@@ -61,17 +68,17 @@ public class PlayerController : MonoBehaviour
         moveDirection = move.ReadValue<Vector2>();
         if (moveDirection.x > 0.1f)
         {
-            animator.SetBool("IsRunning", true);
+            animator.SetBool("isWalk", true);
             transform.localScale = new Vector2(1, 1);
         }
         else if (moveDirection.x < -0.1f)
         {
-            animator.SetBool("IsRunning", true);
+            animator.SetBool("isWalk", true);
             transform.localScale = new Vector2(-1, 1);
         }
         else
         {
-            animator.SetBool("IsRunning", false);
+            animator.SetBool("isWalk", false);
         }
 
     }
@@ -82,20 +89,50 @@ public class PlayerController : MonoBehaviour
         rb.velocity = new Vector2(moveDirection.x * moveSpeed, rb.velocity.y);
     }
 
-    private void Attack(InputAction.CallbackContext context)
+    private void Punch(InputAction.CallbackContext context)
     {
         animator.SetTrigger("Punch");
 
-        
 
-        Collider2D hitEnemy = Physics2D.OverlapBox(AttackPoint.position, new Vector2(attackRangeX, attackRangeY),  enemyLayer);
-        
+
+        Collider2D hitEnemy = Physics2D.OverlapBox(AttackPoint.position, new Vector2(attackRangeX, attackRangeY), enemyLayer);
+
         if (hitEnemy != null)
         {
             Debug.Log(hitEnemy.name);
             GameObject Target = GameObject.Find(hitEnemy.name);
             Enemy enemy = Target.GetComponent<Enemy>();
-            
+
+            if (enemy != null)
+            {
+                enemy.TakeDamage(playerManager.player.Strength);
+                Debug.Log("We hit " + enemy.name + ". Remaining health: " + enemy.Health);
+            }
+            else
+            {
+                Debug.LogWarning("Hit object does not have an Enemy component.");
+            }
+        }
+        else
+        {
+            Debug.Log("No enemy hit.");
+        }
+    }
+
+    private void Kick(InputAction.CallbackContext context)
+    {
+        animator.SetTrigger("Kick");
+
+
+
+        Collider2D hitEnemy = Physics2D.OverlapBox(AttackPoint.position, new Vector2(attackRangeX, attackRangeY), enemyLayer);
+
+        if (hitEnemy != null)
+        {
+            Debug.Log(hitEnemy.name);
+            GameObject Target = GameObject.Find(hitEnemy.name);
+            Enemy enemy = Target.GetComponent<Enemy>();
+
             if (enemy != null)
             {
                 enemy.TakeDamage(playerManager.player.Strength);
