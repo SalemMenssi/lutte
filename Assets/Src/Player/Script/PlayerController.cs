@@ -1,6 +1,7 @@
 using UnityEngine.InputSystem;
 using UnityEngine;
 using Unity.VisualScripting;
+using System.Collections;
 
 public class PlayerController : MonoBehaviour
 {
@@ -9,6 +10,7 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField]
     private Transform AttackPoint;
+    
 
     [SerializeField]
     private float attackRangeX = 2f;
@@ -94,12 +96,11 @@ public class PlayerController : MonoBehaviour
         animator.SetTrigger("Punch");
 
 
-
         Collider2D hitEnemy = Physics2D.OverlapBox(AttackPoint.position, new Vector2(attackRangeX, attackRangeY), enemyLayer);
 
         if (hitEnemy != null)
         {
-            Debug.Log(hitEnemy.name);
+           
             GameObject Target = GameObject.Find(hitEnemy.name);
             Enemy enemy = Target.GetComponent<Enemy>();
 
@@ -122,7 +123,6 @@ public class PlayerController : MonoBehaviour
     private void Kick(InputAction.CallbackContext context)
     {
         animator.SetTrigger("Kick");
-
 
 
         Collider2D hitEnemy = Physics2D.OverlapBox(AttackPoint.position, new Vector2(attackRangeX, attackRangeY), enemyLayer);
@@ -154,6 +154,8 @@ public class PlayerController : MonoBehaviour
         Gizmos.color = Color.red;  
         Gizmos.DrawWireCube(AttackPoint.position, new Vector2(attackRangeX, attackRangeY)); 
     }
+    
 
+    
 
 }
