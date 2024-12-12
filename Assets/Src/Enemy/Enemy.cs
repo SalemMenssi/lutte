@@ -12,8 +12,8 @@ public class Enemy : MonoBehaviour
     public float Agility;
     public float Stamina;
     public float Defense;
-
     
+
     private HealthBar healthBar;
     private Animator animator;
 
@@ -22,6 +22,7 @@ public class Enemy : MonoBehaviour
         player = GameObject.FindGameObjectWithTag("Player").transform;
         animator = GetComponentInChildren<Animator>();
         healthBar = GameObject.Find("Enemy Score").GetComponentInChildren<HealthBar>();
+        
     }
 
     

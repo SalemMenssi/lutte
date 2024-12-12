@@ -10,6 +10,7 @@ public class PlayerManager : MonoBehaviour
     [SerializeField]
     private HealthBar healthBar;
     private Animator animator;
+    public GameObject endScreen;
 
     void Start()
     {
@@ -37,6 +38,7 @@ public class PlayerManager : MonoBehaviour
         if (player.Health <= 0)
         {
             Die();
+            endScreen.SetActive(true);
         }
         else
         {

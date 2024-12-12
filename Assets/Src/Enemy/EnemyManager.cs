@@ -3,13 +3,19 @@ using UnityEngine;
 public class EnemyManager : MonoBehaviour
 {
     public GameObject enemyPrefab; 
-    private Enemy currentEnemy; 
-
+    private Enemy currentEnemy;
+    public GameObject endScreen;
     private void Start()
     {
         SpawnAndInitializeEnemy();
     }
-
+     void Update()
+    {
+        if (currentEnemy.Health <=0) 
+        {
+            endScreen.SetActive(true);
+        }
+    }
     private void SpawnAndInitializeEnemy()
     {
         GameObject enemyObj = Instantiate(enemyPrefab, Vector3.zero, Quaternion.identity);
